@@ -1,11 +1,12 @@
+#defining the functions part1
+$PortScan = @(
+    [PSCustomObject]@{Message = 'Basic Port Scan'; Task = { Basic } }
+    [PSCustomObject]@{Message = 'Full Port Scan'; Task = { Full } }
+)
 
-
-$menu2 = Read-Host -Prompt 'Do you want to do a [Full] Port Scan on the target? Or [Basic] Port Scan?'
-
-
-$basic = {
-    if ($menu2 -eq "Basic") {
-
+#defining the functions part2
+function Basic()
+{
         #The user gets to select the targets IP
         $ip = Read-Host -Prompt 'Enter the IP'
 
@@ -24,23 +25,13 @@ timeout /t 3 /nobreak
 #Finally, it pauses the script so you can see what happened.
 pause
 
-    } else {
-        Write-Host 'Error Close and reopen'
-    }
-
 }
 
-.$basic
-
-
-
-
-$full = {
-    if ($menu2 -eq "Full") {
-
-        Clear-Host
+function Full()
+{
+    Clear-Host
         #The user gets to select the targets IP
-        Write-Host 'This is the FULL scan, This CAN trip the firewall and lead to serious consequences; 
+        Write-Host -ForegroundColor Red  'This is the FULL scan, This CAN trip the firewall and lead to serious consequences; 
         I am not responsible for anything that may go wrong.'
         $ip = Read-Host -Prompt 'Enter the IP'
 
@@ -84,10 +75,22 @@ Test-NetConnection -ComputerName $ip -port 5900
 #Finally, it pauses the script so you can see what happened.
 pause
 
-    } else {
-        Write-Host 'Error Close and reopen'
-    }
-
 }
 
-.$full
+
+# let the user pick a task:
+Write-Host  "Choose a task:"
+
+$PortScan | ForEach-Object -Begin { $i = 1;} -Process { 
+    Write-Host  ('{0}. {1}' -f ($i++), $_.Message) 
+}
+
+do 
+{
+    $value = Read-Host 'Choose a number from the task list'
+
+}
+while($value -match '\D+' -or $value -le 0 -or $value -gt $PortScan.Count)
+
+# invoke the task:
+& $PortScan[$value-1].Task
