@@ -1,7 +1,7 @@
 #defining the functions part1
 $PortScan = @(
-    [PSCustomObject]@{Message = 'Basic Port Scan'; Task = { Basic } }
-    [PSCustomObject]@{Message = 'Full Port Scan'; Task = { Full } }
+    [PSCustomObject]@{Message = 'Basic Port Scan'; Option = { Basic } }
+    [PSCustomObject]@{Message = 'Full Port Scan'; Option = { Full } }
 )
 
 #defining the functions part2
@@ -78,8 +78,8 @@ pause
 }
 
 
-# let the user pick a task:
-Write-Host  "Choose a task:"
+# let the user pick a Option:
+Write-Host  "Choose a Option:"
 
 $PortScan | ForEach-Object -Begin { $i = 1;} -Process { 
     Write-Host  ('{0}. {1}' -f ($i++), $_.Message) 
@@ -87,10 +87,10 @@ $PortScan | ForEach-Object -Begin { $i = 1;} -Process {
 
 do 
 {
-    $value = Read-Host 'Choose a number from the task list'
+    $value = Read-Host 'Choose a number from the list'
 
 }
 while($value -match '\D+' -or $value -le 0 -or $value -gt $PortScan.Count)
 
-# invoke the task:
-& $PortScan[$value-1].Task
+# invoke the Option chosen:
+& $PortScan[$value-1].Option
